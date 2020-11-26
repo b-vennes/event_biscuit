@@ -7,29 +7,27 @@
 mod projections;
 mod teapot;
 
-use event_biscuit::*;
+use event_biscuit::aggregate::Aggregate;
 use rocket_contrib::json::{Json};
-use teapot::commands::*;
+use teapot::commands::{TeapotCommand, CreateTeapotData};
+use teapot::TeapotAggregate;
+use uuid::Uuid;
 
-#[post("/CreateTeapot", format="json", data="<command>")]
-fn create_teapot(command: Json<CreateTeapot>) -> Result<String, String> {
-    let events = teapot::new().handle(TeapotCommand::CreateTeapot(command.0));
+#[post("/CreateTeapot", format="json", data="<data>")]
+fn create_teapot(data: Json<CreateTeapotData>) -> Result<String, String> {
+    TeapotAggregate::handle(TeapotCommand::CreateTeapot(data.0), vec![]);
 
-    Ok(serde_json::to_string(&events).expect("Error with event serialization"))
+    Ok("test".to_string())
 }
 
-#[post("/BrewTea", format="json", data="<command>")]
-fn brew_tea(command: Json<BrewTea>) -> Result<String, String> {
-    let events = teapot::new().handle(TeapotCommand::BrewTea(command.0));
-
-    Ok(serde_json::to_string(&events).expect("Error with event serialization"))
+#[post("/BrewTea/<id>")]
+fn brew_tea(id: String) -> Result<String, String> {
+    Ok("".to_string())
 }
 
-#[post("/PourTea", format="json", data="<command>")]
-fn pour_tea(command: Json<PourTea>) -> Result<String, String> {
-    let events = teapot::new().handle(TeapotCommand::PourTea(command.0));
-
-    Ok(serde_json::to_string(&events).expect("Error with event serialization"))
+#[post("/PourTea/<id>")]
+fn pour_tea(id: String) -> Result<String, String> {
+    Ok("".to_string())
 }
 
 fn main() {
